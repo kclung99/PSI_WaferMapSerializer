@@ -31,29 +31,6 @@ namespace PSI_WaferMapSerializer.UnitTests
             _setup = setup;
         }
 
-        [Theory]
-        [InlineData("DEVICE", 1)]
-        [InlineData("BCEQU", 2)]
-        public void AssignMapDictionaryAndMapRows_ValidInput_CorrectDictionaryCount(string fieldName, int dataCount)
-        {
-            var mapDictionary = new Dictionary<string, List<string>>();
-            var mapRows = new Stack<List<string>>();
-            _setup.Serializer.AssignMapDictionaryAndMapRows(_setup.Input, mapDictionary, mapRows);
-
-            Assert.Equal(dataCount, mapDictionary[fieldName].Count);
-        }
-
-        [Theory]
-        [InlineData(110)]
-        public void AssignMapDictionaryAndMapRows_ValidInput_CorrectRowCount(int dataCount)
-        {
-            var mapDictionary = new Dictionary<string, List<string>>();
-            var mapRows = new Stack<List<string>>();
-            _setup.Serializer.AssignMapDictionaryAndMapRows(_setup.Input, mapDictionary, mapRows);
-
-            Assert.Equal(dataCount, mapRows.Count);
-        }
-
         [Fact]
         public void Deserialize_ValidInput_ReturnCorrectValue()
         {

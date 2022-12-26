@@ -1,0 +1,12 @@
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\bin\Debug\net6.0\PSI_WaferMapSerializer.deps.json
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\bin\Debug\net6.0\PSI_WaferMapSerializer.dll
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\bin\Debug\net6.0\PSI_WaferMapSerializer.pdb
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\obj\Debug\net6.0\PSI_WaferMapSerializer.csproj.AssemblyReference.cache
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\obj\Debug\net6.0\PSI_WaferMapSerializer.GeneratedMSBuildEditorConfig.editorconfig
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\obj\Debug\net6.0\PSI_WaferMapSerializer.AssemblyInfoInputs.cache
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\obj\Debug\net6.0\PSI_WaferMapSerializer.AssemblyInfo.cs
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\obj\Debug\net6.0\PSI_WaferMapSerializer.csproj.CoreCompileInputs.cache
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\obj\Debug\net6.0\PSI_WaferMapSerializer.dll
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\obj\Debug\net6.0\refint\PSI_WaferMapSerializer.dll
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\obj\Debug\net6.0\PSI_WaferMapSerializer.pdb
+D:\Prog\PSI_WaferMapSerializer\PSI_WaferMapSerializer\obj\Debug\net6.0\ref\PSI_WaferMapSerializer.dll

@@ -37,7 +37,7 @@ namespace PSI_WaferMapSerializer
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Deserialization fails on sinf map: {ex.Message}\n{ex.StackTrace}");
+                Console.WriteLine($"Sinf deserialization fails on : {ex.Message}\n{ex.StackTrace}");
                 throw;
             }
 

@@ -31,6 +31,14 @@ namespace PSI_WaferMapSerializer.UnitTests
             _setup = setup;
         }
 
+        [Fact]
+        public void Deserialize_ValidInput_ReturnEscModel()
+        {
+            var mapModel = _setup.Serializer.Deserialize(_setup.Input);
+
+            Assert.NotNull(mapModel);
+        }
+
         [Theory]
         [InlineData("LOT", 1)]
         [InlineData("XSTEP", 3)]

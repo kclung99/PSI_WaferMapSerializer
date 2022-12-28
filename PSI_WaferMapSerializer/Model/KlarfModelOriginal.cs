@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Utilities
+namespace PSI_WaferMapSerializer.Model
 {
-    public class KlarfMapModel
+    public class KlarfModelOriginal
     {
         public List<string> FileVersion { get; set; }
         public List<string> FileTimeStamp { get; set; }

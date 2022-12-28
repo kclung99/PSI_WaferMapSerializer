@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Reflection;
+using PSI_WaferMapSerializer.Model;
 
-namespace Utilities
+namespace PSI_WaferMapSerializer
 {
-    public class KlarfMapSerializer
+    public class KlarfSerializerOriginal
     {
-        public KlarfMapModel Deserialize (string input)
+        public KlarfModelOriginal Deserialize (string input)
         {
             var mapDictionary = new Dictionary<string, List<string>>();
-            KlarfMapModel mapModel = new KlarfMapModel();
+            KlarfModelOriginal mapModel = new KlarfModelOriginal();
 
             /* Store each tag field and data fields into a key value pair */
             GetMapDictionary(input, mapDictionary);
@@ -24,9 +25,9 @@ namespace Utilities
             {
                 foreach (KeyValuePair<string, List<string>> kv in mapDictionary)
                 {
-                    if (PropertyIsType<KlarfMapModel, Type>(mapModel, kv.Key, typeof(string), typeof(List<string>)))
+                    if (PropertyIsType<KlarfModelOriginal, Type>(mapModel, kv.Key, typeof(string), typeof(List<string>)))
                         DynamicAssignStringOrStringListProperty(kv, mapModel);
-                    else if (PropertyIsType<KlarfMapModel, Type>(mapModel, kv.Key, 
+                    else if (PropertyIsType<KlarfModelOriginal, Type>(mapModel, kv.Key, 
                         typeof(AlignmentPoints), 
                         typeof(AlignmentImages), 
                         typeof(SampleTestPlan), 
@@ -81,7 +82,7 @@ namespace Utilities
         }
 
         /* High level method dispatching */
-        public void DynamicAssignElementWithNumberOfFieldGroupsProperty(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void DynamicAssignElementWithNumberOfFieldGroupsProperty(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             var dic = new Dictionary<string, List<Type>>()
             {
@@ -91,23 +92,23 @@ namespace Utilities
                 { "ClusterClassificationList", new List<Type>() { typeof(ClusterClassification), typeof(ClusterClassificationList) } }
             };
 
-            typeof(KlarfMapSerializer).GetMethod("AssignPropertyWithNumberOfFieldGroups")
+            typeof(KlarfSerializerOriginal).GetMethod("AssignPropertyWithNumberOfFieldGroups")
                 .MakeGenericMethod(dic[kv.Key][0], dic[kv.Key][1]).Invoke(this, new object[] { kv, mapModel });
         }
-        public void DynamicAssignProperty(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void DynamicAssignProperty(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
-            typeof(KlarfMapSerializer).GetMethod($"Assign{kv.Key}").Invoke(this, new object[] { kv, mapModel });
+            typeof(KlarfSerializerOriginal).GetMethod($"Assign{kv.Key}").Invoke(this, new object[] { kv, mapModel });
         }
 
         /* Actual assigning methods */
-        public void DynamicAssignStringOrStringListProperty(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void DynamicAssignStringOrStringListProperty(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             if (kv.Value.Count == 1) // single data field 
                 mapModel.GetType().GetProperty(kv.Key).SetValue(mapModel, kv.Value[0]);
             else
                 mapModel.GetType().GetProperty(kv.Key).SetValue(mapModel, kv.Value);
         }
-        public void AssignPropertyWithNumberOfFieldGroups<inner, outer>(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel) 
+        public void AssignPropertyWithNumberOfFieldGroups<inner, outer>(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel) 
             where inner: class, new() where outer: class, new()
         {
             var properties = typeof(inner).GetProperties();
@@ -142,7 +143,7 @@ namespace Utilities
 
             mapModel.GetType().GetProperty(typeof(outer).Name).SetValue(mapModel, u);
         }
-        public void AssignDefectRecordSpec(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AssignDefectRecordSpec(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             var defectRecordSpecFieldsList = new List<string>();
 
@@ -155,7 +156,7 @@ namespace Utilities
                 DefectRecordSpecFieldsList = defectRecordSpecFieldsList
             };
         }
-        public void AssignDefectList(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AssignDefectList(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             var defectList = new List<List<string>>() ;
 
@@ -191,7 +192,7 @@ namespace Utilities
 
             mapModel.DefectList = defectList;
         }
-        public void AssignSummarySpec(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AssignSummarySpec(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             var summarySpecFieldList = new List<string>();
 
@@ -204,7 +205,7 @@ namespace Utilities
                 SummarySpecFieldsList = summarySpecFieldList
             };
         }
-        public void AssignSummaryList(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AssignSummaryList(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             var summaryList = new List<List<string>>();
 
@@ -224,19 +225,19 @@ namespace Utilities
 
             mapModel.SummaryList = summaryList;
         }
-        public void AssignEndOfFile(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AssignEndOfFile(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             mapModel.EndOfFile = true;
         }
         
         #region Retired methods
-        public bool IsTypeOfStringOrStringList(KlarfMapModel mapModel, string property)
+        public bool IsTypeOfStringOrStringList(KlarfModelOriginal mapModel, string property)
         {
             var propertyType = mapModel.GetType().GetProperty(property).PropertyType;
 
             return (propertyType == typeof(List<string>)) || (propertyType == typeof(string));
         }
-        public void AutoAssignEnumProperty(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AutoAssignEnumProperty(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             // Difficulties:
             // 1. Newing a generic instance to receive result from Enum.TryParse() 
@@ -252,7 +253,7 @@ namespace Utilities
 
             mapModel.GetType().GetProperty(kv.Key).SetValue(mapModel, value);
         }
-        public void AssignAlignmentPoints(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AssignAlignmentPoints(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             var alignmentPointsList = new List<AlignmentPoint>();
             AlignmentPoint alignmentPoint;
@@ -275,7 +276,7 @@ namespace Utilities
                 AlignmentPointsList = alignmentPointsList
             };
         }
-        public void AssignAlignmentImages(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AssignAlignmentImages(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             var alignmentImagesList = new List<AlignmentImage>();
             AlignmentImage alignmentImage;
@@ -299,7 +300,7 @@ namespace Utilities
                 AlignmentImagesList = alignmentImagesList
             };
         }
-        public void AssignSampleTestPlan(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AssignSampleTestPlan(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             var sampleDiesList = new List<SampleDie>();
             SampleDie sampleDie;
@@ -321,7 +322,7 @@ namespace Utilities
                 SampleDiesList = sampleDiesList
             };
         }
-        public void AssignClusterClassificationList(KeyValuePair<string, List<string>> kv, KlarfMapModel mapModel)
+        public void AssignClusterClassificationList(KeyValuePair<string, List<string>> kv, KlarfModelOriginal mapModel)
         {
             var clusterClassificationsList = new List<ClusterClassification>();
             ClusterClassification clusterClassification;

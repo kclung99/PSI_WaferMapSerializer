@@ -54,7 +54,7 @@ namespace Utilities.UnitTests
         [InlineData("SampleTestPlan", false)] // class
         public void IsTypeOfStringOrStringList_ValidInput_ReturnExpectedBool(string property, bool expected)
         {
-            var model = new KlarfMapModel();
+            var model = new KlarfModel();
 
             var actual = _setup.Serializer.IsTypeOfStringOrStringList(model, property);
 
@@ -67,7 +67,7 @@ namespace Utilities.UnitTests
         [InlineData("NonExistField")]
         public void IsTypeOfStringOrStringList_InputUndefinedProperty_ThorwException(string property)
         {
-            var model = new KlarfMapModel();
+            var model = new KlarfModel();
 
             Assert.Throws<NullReferenceException>(() => _setup.Serializer.IsTypeOfStringOrStringList(model, property));
         }
@@ -79,9 +79,9 @@ namespace Utilities.UnitTests
         [InlineData("SampleTestPlan", false)] // class
         public void PropertyIsType_ValidInput_ReturnExpectedBool(string property, bool expected)
         {
-            var model = new KlarfMapModel();
+            var model = new KlarfModel();
 
-            var actual = _setup.Serializer.PropertyIsType<KlarfMapModel, Type>(model, property, typeof(string), typeof(List<string>));
+            var actual = _setup.Serializer.PropertyIsType<KlarfModel, Type>(model, property, typeof(string), typeof(List<string>));
 
             Assert.Equal(expected, actual);
         }
@@ -98,7 +98,7 @@ namespace Utilities.UnitTests
         [MemberData(nameof(GetStringOrStringListKeyValuePair))]
         public void DynamicAssignStringOrStringListProperty_ValidInput_AssignPropertyToModel(KeyValuePair<string, List<string>> kv)
         {
-            var model = new KlarfMapModel();
+            var model = new KlarfModel();
 
             _setup.Serializer.DynamicAssignStringOrStringListProperty(kv, model);
 
@@ -120,7 +120,7 @@ namespace Utilities.UnitTests
         [MemberData(nameof(GetEnumKeyValuePair))]
         public void AutoAssignEnumProperty_ValidInput_AssignPropertyToModel(KeyValuePair<string, List<string>> kv)
         {
-            var model = new KlarfMapModel();
+            var model = new KlarfModel();
 
             _setup.Serializer.AutoAssignEnumProperty(kv, model);
 
@@ -137,7 +137,7 @@ namespace Utilities.UnitTests
         [MemberData(nameof(GetAlignmentPointsKeyValuePair))]
         public void AssignAlignmentPoints_ValidInput_AssignPropertyToModel(KeyValuePair<string, List<string>> kv, string expected )
         {
-            var model = new KlarfMapModel();
+            var model = new KlarfModel();
 
             _setup.Serializer.AssignAlignmentPoints(kv, model);
 
@@ -158,7 +158,7 @@ namespace Utilities.UnitTests
         [MemberData(nameof(GetPropertyWithNumberOfFieldGroupsKeyValuePair))]
         public void AssignPropertyWithNumberOfFieldGroups_ValidInput_AssignPropertyToModel(Type innerType, Type outerType, KeyValuePair<string, List<string>> kv, string expected)
         {
-            var model = new KlarfMapModel();
+            var model = new KlarfModel();
 
             _setup.Serializer.GetType().GetMethod("AssignPropertyWithNumberOfFieldGroups").MakeGenericMethod(innerType, outerType).Invoke(_setup.Serializer, new object[] { kv, model });
 
@@ -198,7 +198,7 @@ namespace Utilities.UnitTests
         [MemberData(nameof(GetDefectListKeyValuePair))]
         public void AssignDefectList_ValidInput_AssignPropertyToModel(DefectRecordSpec defectRecordSpec, KeyValuePair<string, List<string>> kv, List<string> expected)
         {
-            var model = new KlarfMapModel
+            var model = new KlarfModel
             {
                 DefectRecordSpec = defectRecordSpec
             };
@@ -228,7 +228,7 @@ namespace Utilities.UnitTests
         [MemberData(nameof(GetSummarySpecKeyValuePair))]
         public void AssignSummarySpec_ValidInput_AssignPropertyToModel(KeyValuePair<string, List<string>> kv, string expectedNumberOfFields, List<string> expectedList)
         {
-            var model = new KlarfMapModel();
+            var model = new KlarfModel();
 
             _setup.Serializer.AssignSummarySpec(kv, model);
 
@@ -257,7 +257,7 @@ namespace Utilities.UnitTests
         [MemberData(nameof(GetSummaryListKeyValuePair))]
         public void AssignSummaryList_ValidInput_AssignPropertyToModel(SummarySpec summarySpec, KeyValuePair<string, List<string>> kv, List<string> expected)
         {
-            var model = new KlarfMapModel
+            var model = new KlarfModel
             {
                 SummarySpec = summarySpec
             };

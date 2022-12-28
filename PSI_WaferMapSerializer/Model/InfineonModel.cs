@@ -29,12 +29,12 @@ namespace PSI_WaferMapSerializer.Model
         public int REFPY1 { get; set; }
         public int REFPX2 { get; set; }
         public int REFPY2 { get; set; }
-        public List<string> SKIPD1 { get; set; }
+        public List<string> SKIPDI { get; set; }
         public string LOTMEA { get; set; }
         public DateTime TIMEST { get; set; }
         public int SUMPAS { get; set; }
-        public string MAPID1 { get; set; } 
         public string REMARK { get; set; }
+        public string MAPID1 { get; set; } 
         public string[][] MAP { get; set; }
     }
 }

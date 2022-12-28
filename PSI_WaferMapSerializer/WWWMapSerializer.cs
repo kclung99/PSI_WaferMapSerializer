@@ -41,7 +41,8 @@ namespace PSI_WaferMapSerializer
                     LAYOUT = mapDictioanry["LAYOUT"],
                     SHOT_MAP = GetMap(mapDictioanry["SHOT_MAP"]),
                     //PLUG_MAP = GetMap(mapDictioanry["PLUG_MAP"]),
-                    //PARTIAL_MAP = GetMap(mapDictioanry["PARTIAL_MAP"])
+                    //PARTIAL_MAP = GetMap(mapDictioanry["PARTIAL_MAP"]),
+                    Wafers = GetWafers(mapDictioanry)
                 };
             }
             catch (Exception ex)
@@ -134,9 +135,14 @@ namespace PSI_WaferMapSerializer
             var waferDictionary = new Dictionary<string, WWWMapWafer>();
             var waferMapDictionary = new Dictionary<string, WWWMapWaferMap>();
 
+            var waferIdRegex = new Regex(@"WAFERID.(?<SequenceNumber>[0-9]{2})");
+            var fabIdRegex = new Regex(@"FABID.(?<SequenceNumber>[0-9]{2})");
+            var numBinsRegex = new Regex(@"NUM_BINS.(?<SequenceNumber>[0-9]{2})");
+            var binCountRegex = new Regex(@"BIN_COUNT.(?<SequenceNumber>[0-9]{2}).(?<BinNumber>[0-9]{2})");
+            var mapXYRegex = new Regex(@"MAP_XY.(?<SequenceNumber>[0-9]{2}).(?<BinNumber>[0-9]{2})");
+
             foreach (KeyValuePair<string, string> kv in mapDictionary)
             {
-                var waferIdRegex = new Regex(@"WAFERID.(?<SequenceNumber>[0-9]{2})");
                 if (waferIdRegex.IsMatch(kv.Key))
                 {
                     var sequenceNumber = waferIdRegex.Match(kv.Key).Groups["SequenceNumber"].Value;
@@ -144,32 +150,24 @@ namespace PSI_WaferMapSerializer
 
                     waferDictionary.Add(sequenceNumber, wafer);
                 }
-
-                var fabIdRegex = new Regex(@"FABID.(?<SequenceNumber>[0-9]{2})");
-                if (fabIdRegex.IsMatch(kv.Key))
+                else if (fabIdRegex.IsMatch(kv.Key))
                 {
                     var sequenceNumber = fabIdRegex.Match(kv.Key).Groups["SequenceNumber"].Value;
                     waferDictionary[sequenceNumber].FABID = kv.Value;
                 }
-
-                var numBinsRegex = new Regex(@"NUM_BINS.(?<SequenceNumber>[0-9]{2})");
-                if (numBinsRegex.IsMatch(kv.Key))
+                else if (numBinsRegex.IsMatch(kv.Key))
                 {
                     var sequenceNumber = numBinsRegex.Match(kv.Key).Groups["SequenceNumber"].Value;
                     waferDictionary[sequenceNumber].NUM_BINS = int.Parse(kv.Value);
                 }
-
-                var binCountRegex = new Regex(@"BIN_COUNT.(?<SequenceNumber>[0-9]{2}).(?<BinNumber>[0-9]{2})");
-                if (binCountRegex.IsMatch(kv.Key))
+                else if (binCountRegex.IsMatch(kv.Key))
                 {
                     var sequenceNumber = binCountRegex.Match(kv.Key).Groups["SequenceNumber"].Value;
                     var binNumber = binCountRegex.Match(kv.Key).Groups["BinNumber"].Value;
                     var waferMap = new WWWMapWaferMap() { BinNumber = binNumber, BIN_COUNT= int.Parse(kv.Value) };
                     waferMapDictionary.Add($"{sequenceNumber}.{binNumber}", waferMap);
                 }
-
-                var mapXYRegex = new Regex(@"MAP_XY.(?<SequenceNumber>[0-9]{2}).(?<BinNumber>[0-9]{2})");
-                if (mapXYRegex.IsMatch(kv.Key))
+                else if (mapXYRegex.IsMatch(kv.Key))
                 {
                     var sequenceNumber = mapXYRegex.Match(kv.Key).Groups["SequenceNumber"].Value;
                     var binNumber = mapXYRegex.Match(kv.Key).Groups["BinNumber"].Value;
@@ -185,7 +183,7 @@ namespace PSI_WaferMapSerializer
 
             wafers = waferDictionary.Select(kv => kv.Value).ToList();
 
-            throw new NotImplementedException();
+            return wafers;
         }
     }
 }

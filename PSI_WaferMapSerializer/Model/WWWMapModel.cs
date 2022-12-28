@@ -29,7 +29,7 @@ namespace PSI_WaferMapSerializer.Model
         public List<WWWMapDie> SHOT_MAP { get; set; }
         public List<WWWMapDie> PLUG_MAP { get; set; }
         public List<WWWMapDie> PARTIAL_MAP { get; set; }
-        public Dictionary<string, WWWMapWafer> WaferDictionary { get; set; }
+        public List<WWWMapWafer> Wafers { get; set; }
 
     }
 
@@ -47,10 +47,11 @@ namespace PSI_WaferMapSerializer.Model
 
     public class WWWMapWafer
     {
+        public string SequenceNumber { get; set; }
         public string WAFERID { get; set; }
         public string FABID { get; set; }
         public int NUM_BINS { get; set; }
-        public Dictionary<string, WWWMapWaferMap> WaferMapDictionary { get; set; }
+        public List<WWWMapWaferMap> WaferMaps { get; set; }
 
     }
 

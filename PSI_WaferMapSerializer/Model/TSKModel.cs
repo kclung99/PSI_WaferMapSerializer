@@ -37,8 +37,8 @@ namespace PSI_WaferMapSerializer.Model
         public int ProbingStartPosition { get; set; } 
         public int ProbingDirection { get; set; } 
         public int WaferCoordinateSystemDataReserved2 { get; set; }
-        public int DistanceXToWaferCenterDieOrigin { get; set; } //
-        public int DistanceYToWaferCenterDieOrigin { get; set; } //
+        public int DistanceXToWaferCenterDieOrigin { get; set; } // parsed value seems off
+        public int DistanceYToWaferCenterDieOrigin { get; set; } // parsed value seems off
         public int CoordinatorXOfWaferCenterDie { get; set; } 
         public int CoordinatorYOfWaferCenterDie { get; set; } 
         public int FirstDieCoordinatorX { get; set; } 
@@ -84,5 +84,27 @@ namespace PSI_WaferMapSerializer.Model
         public int ExtendedMapInformationReserved { get; set; }
     }
 
+    public class TskDieResult
+    {
+        public int TestResult { get; set; }
+        public int Marking { get; set; }
+        public int FailMarkInspection { get; set; }
+        public int ReProbingResult { get; set; }
+        public int NeedleMarkInspectionResult { get; set; }
+        public int DieCoordinatorValueX { get; set; }
+        public int DieProperty { get; set; }
+        public int NeedleMarkingInspectionExecutionDieSelection { get; set; }
+        public int SamplingDie { get; set; }
+        public int CodeBitOfCoordinatorValueX { get; set; }
+        public int CodeBitOfCoordinatorValueY { get; set; }
+        public int DummyData { get; set; }
+        public int DieCoordinatorValueY { get; set; }
+        public int MeasurementFinishFlag { get; set; }
+        public int RejectChipFlag { get; set; }
+        public int TestExecutionSiteNo { get; set; }
+        public int BlockAreaJudgementFunction { get; set; }
+        public int CategoryData { get; set; }
+        
+    }
 
 }

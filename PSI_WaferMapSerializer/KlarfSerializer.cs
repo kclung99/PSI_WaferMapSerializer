@@ -10,16 +10,16 @@ namespace PSI_WaferMapSerializer
 {
     public class KlarfSerializer
     {
-        public KlarfModelOriginal Deserialize(string input)
+        public KlarfModel Deserialize(string input)
         {
             var mapDictionary = new Dictionary<string, string>();
-            KlarfModelOriginal mapModel;
+            KlarfModel mapModel;
 
             try
             {
                 AssignMapDictionary(input, mapDictionary);
 
-                mapModel = new KlarfModelOriginal();
+                mapModel = new KlarfModel();
             }
             catch (Exception ex)
             {

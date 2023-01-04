@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PSI_WaferMapSerializer
@@ -23,7 +24,12 @@ namespace PSI_WaferMapSerializer
 
                 mapModel.GetType().GetProperties().ToList().ForEach(property =>
                 {
-                    if (property.PropertyType == typeof(string))
+                    if (property.Name == "DieResults")
+                    {
+                        var dieCount = mapModel.MapDataAreaRowSize * mapModel.MapDataAreaLineSize;
+                        mapModel.DieResults = GetDieResults(byteArray, fieldPointer["DieResults"], dieCount);
+                    }
+                    else if (property.PropertyType == typeof(string))
                     {
                         property.SetValue(mapModel, GetValueString(byteArray, fieldPointer[property.Name]));
                     }
@@ -32,8 +38,6 @@ namespace PSI_WaferMapSerializer
                         property.SetValue(mapModel, GetValueInt(byteArray, fieldPointer[property.Name]));
                     }
                 });
-
-
 
             }
             catch (Exception ex)
@@ -57,8 +61,6 @@ namespace PSI_WaferMapSerializer
                 }
             }
         }
-
-
         public Dictionary<string, (int, int)> GetFieldPointer()
         {
             /*
@@ -140,6 +142,7 @@ namespace PSI_WaferMapSerializer
                 { "MaxMultiSite", (231, 2) },
                 { "MaxCategories", (233, 2) },
                 { "ExtendedMapInformationReserved", (235, 2) },
+                { "DieResults", (237, 6)}
             };
         }
         public string GetValueString(byte[] byteArray, (int, int) pointer)
@@ -150,7 +153,6 @@ namespace PSI_WaferMapSerializer
             var skipCount = sequenceStart - 1;
             return Encoding.Default.GetString(byteArray.Skip(skipCount).Take(size).ToArray()).Trim();
         }
-
         public int GetValueInt(byte[] byteArray, (int, int) pointer)
         {
             var sequenceStart = pointer.Item1;
@@ -167,6 +169,75 @@ namespace PSI_WaferMapSerializer
             }
 
             return result;
+        }
+        public List<TSKDieResult> GetDieResults(byte[] byteArray, (int, int) pointer, int dieCount)
+        {
+            var dieResults = new List<TSKDieResult>();
+
+            var sequenceStart = pointer.Item1;
+            var size = pointer.Item2;
+
+            var resultPattern =
+                    "(?<DieTestResult>[01]{2})" +
+                    "(?<Marking>[01]{1})" +
+                    "(?<FailMarkInspection>[01]{1})" +
+                    "(?<ReProbingResult>[01]{2})" +
+                    "(?<NeedleMarkInspectionResult>[01]{1})" +
+                    "(?<DieCoordinatorValueX>[01]{9})" +
+                    "(?<DieProperty>[01]{2})" +
+                    "(?<ExecutionDieSelection>[01]{1})" +
+                    "(?<SampleDie>[01]{1})" +
+                    "(?<CodeBitCoordX>[01]{1})" +
+                    "(?<CodeBitCoordY>[01]{1})" +
+                    "(?<DummyData>[01]{1})" +
+                    "(?<DieCoordinatorValueY>[01]{9})" +
+                    "(?<MeasurementFinishFlag>[01]{1})" +
+                    "(?<RejectChipFlag>[01]{1})" +
+                    "(?<TestExecutionSite>[01]{6})" +
+                    "(?<BlockAreaJudgementFunction>[01]{2})" +
+                    "(?<CategoryData>[01]{6})";
+
+            var resultRegex = new Regex(resultPattern);
+
+            for (int i = 0; i < dieCount; i++)
+            {
+                var die = new TSKDieResult();
+                var skipCount = sequenceStart + (i * size) - 1;
+                var input = byteArray.Skip(skipCount).Take(size).ToArray();
+
+                var resultString = "";
+               for (int j = 0; j < input.Length; j++)
+                {
+                    resultString += Convert.ToString(input[j], 2).PadLeft(8, '0');
+                }
+
+                var resultMatch = resultRegex.Match(resultString);
+                var dieResult = new TSKDieResult()
+                {
+                    TestResult = Convert.ToInt32(resultMatch.Groups["DieTestResult"].Value, 2),
+                    Marking = Convert.ToInt32(resultMatch.Groups["Marking"].Value, 2),
+                    FailMarkInspection = Convert.ToInt32(resultMatch.Groups["FailMarkInspection"].Value, 2),
+                    ReProbingResult = Convert.ToInt32(resultMatch.Groups["ReProbingResult"].Value, 2),
+                    NeedleMarkInspectionResult = Convert.ToInt32(resultMatch.Groups["NeedleMarkInspectionResult"].Value, 2),
+                    DieCoordinatorValueX = Convert.ToInt32(resultMatch.Groups["DieCoordinatorValueX"].Value, 2),
+                    DieProperty = Convert.ToInt32(resultMatch.Groups["DieProperty"].Value, 2),
+                    NeedleMarkingInspectionExecutionDieSelection = Convert.ToInt32(resultMatch.Groups["ExecutionDieSelection"].Value, 2),
+                    SamplingDie = Convert.ToInt32(resultMatch.Groups["SampleDie"].Value, 2),
+                    CodeBitOfCoordinatorValueX = Convert.ToInt32(resultMatch.Groups["CodeBitCoordX"].Value, 2),
+                    CodeBitOfCoordinatorValueY = Convert.ToInt32(resultMatch.Groups["CodeBitCoordY"].Value, 2),
+                    DummyData = Convert.ToInt32(resultMatch.Groups["DummyData"].Value, 2),
+                    DieCoordinatorValueY = Convert.ToInt32(resultMatch.Groups["DieCoordinatorValueY"].Value, 2),
+                    MeasurementFinishFlag = Convert.ToInt32(resultMatch.Groups["MeasurementFinishFlag"].Value, 2),
+                    RejectChipFlag = Convert.ToInt32(resultMatch.Groups["RejectChipFlag"].Value, 2),
+                    TestExecutionSiteNo = Convert.ToInt32(resultMatch.Groups["TestExecutionSite"].Value, 2),
+                    BlockAreaJudgementFunction = Convert.ToInt32(resultMatch.Groups["BlockAreaJudgementFunction"].Value, 2),
+                    CategoryData = Convert.ToInt32(resultMatch.Groups["CategoryData"].Value, 2)
+                };
+
+                dieResults.Add(dieResult);
+            }
+
+            return dieResults;
         }
 
     }

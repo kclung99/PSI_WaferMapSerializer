@@ -16,14 +16,15 @@ namespace PSI_WaferMapSerializer.Model
         public KlarfTiffSpec TiffSpec { get; set; }
         public KlarfInspectionStationID InspectionStationID { get; set; }
         public string SampleType { get; set; }
+        public KlarfSampleSize SampleSize { get; set; }
         public string ResultsID { get; set; }
-        public KlarfTimeStamp ResultTimeStamp { get; set; }
+        public KlarfTimeStamp ResultTimestamp { get; set; }
         public string LotID { get; set; }
         public KlarfSetupID SetupID { get; set; }
         public string StepID { get; set; }
         public string DeviceID { get; set; }
         public string WaferID { get; set; }
-        public string Slot { get; set; }
+        public int Slot { get; set; }
         public string SampleOrientationMarkType { get; set; }
         public string OrientationMarkLocation { get; set; }
         public string InspectionOrientation { get; set; }
@@ -213,7 +214,7 @@ namespace PSI_WaferMapSerializer.Model
 
     public class KlarfSpec
     {
-        public string NumberOfFields { get; set; }
+        public int NumberOfFields { get; set; }
         public List<string> Specs { get; set; }
     }
 

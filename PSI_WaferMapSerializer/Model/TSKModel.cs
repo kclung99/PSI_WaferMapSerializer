@@ -82,9 +82,10 @@ namespace PSI_WaferMapSerializer.Model
         public int MaxMultiSite { get; set; }
         public int MaxCategories { get; set; }
         public int ExtendedMapInformationReserved { get; set; }
+        public List<TSKDieResult> DieResults { get; set; }
     }
 
-    public class TskDieResult
+    public class TSKDieResult
     {
         public int TestResult { get; set; }
         public int Marking { get; set; }

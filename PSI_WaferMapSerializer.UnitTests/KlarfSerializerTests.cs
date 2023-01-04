@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,35 +8,34 @@ using Xunit;
 
 namespace PSI_WaferMapSerializer.UnitTests
 {
-    public class TSKSerializerSetup
+    public class KlarfSerializerSetup
     {
-        public TSKSerializer Serializer { get; private set; }
+        public KlarfSerializer Serializer { get; private set; }
         public string Input { get; private set; }
-        public TSKSerializerSetup()
+        public KlarfSerializerSetup()
         {
-            Serializer = new TSKSerializer();
+            Serializer = new KlarfSerializer();
 
             var currentDir = Directory.GetCurrentDirectory();
             var inputPath = Regex.Replace(currentDir, @"\\PSI_WaferMapSerializer.+",
-                @"\PSI_WaferMapSerializer\PSI_WaferMapSerializer.UnitTests\SampleWafer\FMYK0-0129A-02");
-            Input = inputPath;
+                @"\PSI_WaferMapSerializer\PSI_WaferMapSerializer.UnitTests\SampleWafer\MockKlarfInput.txt");
+            Input = File.ReadAllText(inputPath, Encoding.UTF8);
         }
     }
-    public class TSKSerializerTests : IClassFixture<TSKSerializerSetup>
+    public class KlarfSerializerTests : IClassFixture<KlarfSerializerSetup>
     {
-        private readonly TSKSerializerSetup _setup;
-        public TSKSerializerTests(TSKSerializerSetup setup)
+        private readonly KlarfSerializerSetup _setup;
+        public KlarfSerializerTests(KlarfSerializerSetup setup)
         {
             _setup = setup;
         }
 
         [Fact]
-        public void Deserialize_ValidInput_ReturnTSKModel()
+        public void Deserialize_ValidInput_ReturnKlarfModel()
         {
             var actual = _setup.Serializer.Deserialize(_setup.Input);
 
             Assert.NotNull(actual);
-            Assert.NotEmpty(actual.DieResults);
         }
     }
 }

@@ -191,16 +191,11 @@ namespace PSI_WaferMapSerializer
         {
             var parsedInput = input.Split(" ");
 
-            //return new KlarfDieCoordinate()
-            //{
-            //    XCoordinate = decimal.Parse(parsedInput[0], NumberStyles.Float),
-            //    YCoordinate = decimal.Parse(parsedInput[1], NumberStyles.Float)
-            //};
-            var output = new KlarfDieCoordinate();
-            output.XCoordinate = decimal.Parse(parsedInput[0], NumberStyles.Float);
-            output.YCoordinate = decimal.Parse(parsedInput[1], NumberStyles.Float);
-
-            return output;
+            return new KlarfDieCoordinate()
+            {
+                XCoordinate = decimal.Parse(parsedInput[0], NumberStyles.Float),
+                YCoordinate = decimal.Parse(parsedInput[1], NumberStyles.Float)
+            };
         }
         public KlarfDiePitch GetDiePitch(string input)
         {
@@ -218,38 +213,35 @@ namespace PSI_WaferMapSerializer
 
             foreach(KeyValuePair<string, string> kv in mapDictionary)
             {
-                if (kv.Key == "InspectionTest")
+                switch (kv.Key)
                 {
-                    var inpectionTest = new KlarfInspectionTest() { TestNumber = int.Parse(kv.Value) };
-                    inspectionTests.Add(inpectionTest);
-                }
-                else if (kv.Key == "SampleTestPlan")
-                {
-                    inspectionTests.Last().SampleTestPlan = GetKlarfDice(kv.Value);
-                }
-                else if (kv.Key == "SampleTestReferencePlan")
-                {
-                    //inspectionTests.Last().SampleTestReferencePlan
-                }
-                else if (kv.Key == "InspectedAreaOrigin")
-                {
-                    //inspectionTests.Last().InspectedAreaOrigin
-                }
-                else if (kv.Key == "InspectedArea")
-                {
-                    //inspectionTests.Last().InspectedArea
-                }
-                else if (kv.Key == "AreaPerTest")
-                {
-                    inspectionTests.Last().AreaPerTest = decimal.Parse(kv.Value, NumberStyles.Float);
-                }
-                else if (kv.Key == "TestParametersSpec")
-                {
-                    //inspectionTests.Last().TestParametersSpec
-                }
-                else if (kv.Key == "TestParametersList")
-                {
-                    //inspectionTests.Last().TestParametersList
+                    case "InspectionTest":
+                        {
+                            var inpectionTest = new KlarfInspectionTest() { TestNumber = int.Parse(kv.Value) };
+                            inspectionTests.Add(inpectionTest);
+                            break;
+                        }
+                    case "SampleTestPlan":
+                        inspectionTests.Last().SampleTestPlan = GetKlarfDice(kv.Value);
+                        break;
+                    case "SampleTestReferencePlan":
+                        //
+                        break;
+                    case "InspectedAreaOrigin":
+                        //
+                        break;
+                    case "InspectedArea":
+                        //
+                        break;
+                    case "AreaPerTest":
+                        inspectionTests.Last().AreaPerTest = decimal.Parse(kv.Value, NumberStyles.Float);
+                        break;
+                    case "TestParametersSpec":
+                        //
+                        break;
+                    case "TestParametersList":
+                        //
+                        break;
                 }
 
             }

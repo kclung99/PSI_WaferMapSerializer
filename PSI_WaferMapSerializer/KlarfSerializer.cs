@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
@@ -23,7 +24,7 @@ namespace PSI_WaferMapSerializer
 
                 mapModel = new KlarfModel()
                 {
-                    //FileVersion,
+                    FileVersion = GetFileVersion(mapDictionary["FileVersion"]),
                     FileTimeStamp = GetTimeStamp(mapDictionary["FileTimeStamp"]),
                     //TiffSpec,
                     InspectionStationID = GetInspectionStationID(mapDictionary["InspectionStationID"]),
@@ -62,12 +63,10 @@ namespace PSI_WaferMapSerializer
                     ClusterClassificationList = GetClusterClassificationList(mapDictionary["ClusterClassificationList"]),
                     //WaferStatus,
                     //LotStatus,
-                    EndOfFile = mapDictionary.ContainsKey("EndlOfFile")
+                    EndOfFile = mapDictionary.ContainsKey("EndOfFile")
                 };
 
                 mapModel.InspectionTests = GetInspectionTests(mapDictionary);
-
-                var a = mapModel;
             }
             catch (Exception ex)
             {
@@ -88,15 +87,41 @@ namespace PSI_WaferMapSerializer
                 mapDictionary.Add(fieldsMatch.Groups["TagField"].Value, fieldsMatch.Groups["DataFields"].Value);
             }
         }
+        public KlarfFileVersion GetFileVersion(string input)
+        {
+            var parsedInput = input.Split(" ");
+
+            return new KlarfFileVersion()
+            {
+                MajorReleaseNumber = int.Parse(parsedInput[0]),
+                MinorReleaseNumber = int.Parse(parsedInput[1])
+            };
+        }
+
         public KlarfTimeStamp GetTimeStamp(string input)
         {
             var date = input.Split(" ")[0];
             var time = input.Split(" ")[1];
 
+            var dateMatch = Regex.Match(date, @"(?<Month>\d+)-(?<Day>\d+)-(?<Year>\d+)");
+            var monthCharCount = dateMatch.Groups["Month"].Value.Length;
+            var dayCharCount = dateMatch.Groups["Day"].Value.Length;
+            var yearCharCount = dateMatch.Groups["Year"].Value.Length;
+            var datePattern = $"{new string('M', monthCharCount)}-{new string('d', dayCharCount)}-{new string('y', yearCharCount)}";
+
+            var timeMatch = Regex.Match(time, @"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)");
+            var hourCharCount = timeMatch.Groups["Hour"].Value.Length;
+            var minCharCount = timeMatch.Groups["Minute"].Value.Length;
+            var secCharCount = timeMatch.Groups["Second"].Value.Length;
+            var timePattern = $"{new string('H', hourCharCount)}:{new string('m', minCharCount)}:{new string('s', secCharCount)}";
+
+            var parsedDate = DateOnly.ParseExact(date, datePattern);
+            var parsedTime = TimeOnly.ParseExact(time, timePattern);
+
             return new KlarfTimeStamp()
             {
-                Date = DateOnly.ParseExact(date, "MM-dd-yyyy"),
-                Time = TimeOnly.ParseExact(time, "HH:mm:ss")
+                Date = parsedDate,
+                Time = parsedTime
             };
         }
         public KlarfInspectionStationID GetInspectionStationID(string input)
@@ -139,8 +164,21 @@ namespace PSI_WaferMapSerializer
             var parsedInput = input.Split(" ");
 
             var data = parsedInput[0].Trim('"');
-            var definedDate = DateOnly.ParseExact(parsedInput[1], "MM-dd-yyyy");
-            var definedTime = TimeOnly.ParseExact(parsedInput[2], "HH:mm:ss");
+
+            var dateMatch = Regex.Match(parsedInput[1], @"(?<Month>\d+)-(?<Day>\d+)-(?<Year>\d+)");
+            var monthCharCount = dateMatch.Groups["Month"].Value.Length;
+            var dayCharCount = dateMatch.Groups["Day"].Value.Length;
+            var yearCharCount = dateMatch.Groups["Year"].Value.Length;
+            var datePattern = $"{new string('M', monthCharCount)}-{new string('d', dayCharCount)}-{new string('y', yearCharCount)}";
+
+            var timeMatch = Regex.Match(parsedInput[2], @"(?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+)");
+            var hourCharCount = timeMatch.Groups["Hour"].Value.Length;
+            var minCharCount = timeMatch.Groups["Minute"].Value.Length;
+            var secCharCount = timeMatch.Groups["Second"].Value.Length;
+            var timePattern = $"{new string('H', hourCharCount)}:{new string('m', minCharCount)}:{new string('s', secCharCount)}";
+
+            var definedDate = DateOnly.ParseExact(parsedInput[1], datePattern);
+            var definedTime = TimeOnly.ParseExact(parsedInput[2], timePattern);
 
             return new KlarfSetupID()
             {
@@ -153,11 +191,16 @@ namespace PSI_WaferMapSerializer
         {
             var parsedInput = input.Split(" ");
 
-            return new KlarfDieCoordinate()
-            {
-                XCoordinate = decimal.Parse(parsedInput[0]),
-                YCoordinate = decimal.Parse(parsedInput[1])
-            };
+            //return new KlarfDieCoordinate()
+            //{
+            //    XCoordinate = decimal.Parse(parsedInput[0], NumberStyles.Float),
+            //    YCoordinate = decimal.Parse(parsedInput[1], NumberStyles.Float)
+            //};
+            var output = new KlarfDieCoordinate();
+            output.XCoordinate = decimal.Parse(parsedInput[0], NumberStyles.Float);
+            output.YCoordinate = decimal.Parse(parsedInput[1], NumberStyles.Float);
+
+            return output;
         }
         public KlarfDiePitch GetDiePitch(string input)
         {
@@ -165,8 +208,8 @@ namespace PSI_WaferMapSerializer
 
             return new KlarfDiePitch()
             {
-                XDiePitch = decimal.Parse(parsedInput[0]),
-                YDiePitch = decimal.Parse(parsedInput[1])
+                XDiePitch = decimal.Parse(parsedInput[0], NumberStyles.Float),
+                YDiePitch = decimal.Parse(parsedInput[1], NumberStyles.Float)
             };
         }
         public List<KlarfInspectionTest> GetInspectionTests(Dictionary<string, string> mapDictionary)
@@ -198,7 +241,7 @@ namespace PSI_WaferMapSerializer
                 }
                 else if (kv.Key == "AreaPerTest")
                 {
-                    inspectionTests.Last().AreaPerTest = decimal.Parse(kv.Value);
+                    inspectionTests.Last().AreaPerTest = decimal.Parse(kv.Value, NumberStyles.Float);
                 }
                 else if (kv.Key == "TestParametersSpec")
                 {
@@ -218,7 +261,7 @@ namespace PSI_WaferMapSerializer
             var fieldRegex = new Regex(@"(?<NumberOfGroups>^[0-9]{0,5})\r\n|(?<XIndex>-?[0-9]{1,3})\s(?<YIndex>-?[0-9]{1,3})\r\n");
             var fieldMatchs = fieldRegex.Matches(input);
 
-            var dice = new KlarfDice();
+            var dice = new KlarfDice() { Dice = new List<KlarfDieIndex>() };
 
             foreach(Match fieldMatch in fieldMatchs)
             {
@@ -275,7 +318,7 @@ namespace PSI_WaferMapSerializer
             foreach(string row in rows)
             {
                 var list = new List<decimal>();
-                row.Split(" ").ToList().ForEach(element => list.Add(decimal.Parse(element)));
+                row.Split(" ").ToList().ForEach(element => list.Add(decimal.Parse(element, NumberStyles.Float)));
                 output.Add(list);
             }
 
@@ -283,7 +326,7 @@ namespace PSI_WaferMapSerializer
         }
         public KlarfClusterClassificationList GetClusterClassificationList(string input)
         {
-            var fieldRegex = new Regex(@"(?<NumberOfGroups>^[0-9]+)\r\n?|(?<Identification>[0-9]+)\s(?<Classification>[0-9]+)");
+            var fieldRegex = new Regex(@"(?<NumberOfGroups>^[0-9]+)(\r\n)?|(?<Identification>[0-9]+)\s(?<Classification>[0-9]+)");
             var fieldMatches = fieldRegex.Matches(input);
 
             var output = new KlarfClusterClassificationList() { ClusterClassifications = new List<KlarfClusterClassification>() };

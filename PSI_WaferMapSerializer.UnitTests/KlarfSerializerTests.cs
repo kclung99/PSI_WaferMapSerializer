@@ -37,5 +37,18 @@ namespace PSI_WaferMapSerializer.UnitTests
 
             Assert.NotNull(actual);
         }
+
+        [Theory]
+        [InlineData("\"random\" 5-10-2019 15:59:26", 2019, 5, 10)]
+        [InlineData("\"random\" 5-1-2019 15:59:26", 2019, 5, 1)]
+        [InlineData("\"random\" 11-1-2019 15:59:26", 2019, 11, 1)]
+        [InlineData("\"random\" 11-10-2019 15:59:26", 2019, 11, 10)]
+        [InlineData("\"random\" 11-01-2019 15:59:26", 2019, 11, 1)]
+        public void GetSetupID_ValidInput_ReturnDate(string input, int year, int month, int day)
+        {
+            var actual = _setup.Serializer.GetSetupID(input);
+
+            Assert.Equal(new DateOnly(year, month, day), actual.DefinedDate);
+        }
     }
 }
